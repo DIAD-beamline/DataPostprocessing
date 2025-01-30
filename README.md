@@ -1,19 +1,17 @@
 # DataPostprocessing
 Python notebook or scripts for common postprocessing of DIAD data
 
-# Environment Setup
+## Environment Setup
 
-Load Python:
+1. Load Python:
+   ```bash
+   module load python
+   ```
 
-module load python
-
-Clone this repository:
-
-git clone https://github.com/DIAD-beamline/Tomography_Viewer
-cd Tomography_Viewer
-
-Launch Jupyter Lab:
-
-jupyter notebook
-
-This will open Jupyter Lab in your default web browser. Navigate to the notebook file to begin working with the tomography viewer.
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/DIAD-beamline/$
+   cd $
+   
+   Note: use the name of the notebook of interest in place of $
+   ```
