@@ -11,5 +11,5 @@ Python notebook or scripts for common postprocessing of DIAD data
 2. Clone this repository:
    ```bash
    git clone https://github.com/DIAD-beamline/DataPostprocessing
-   cd $
+   cd DataPostprocessing
    ```
