@@ -13,3 +13,9 @@ Python notebook or scripts for common postprocessing of DIAD data
    git clone https://github.com/DIAD-beamline/DataPostprocessing
    cd DataPostprocessing
    ```
+3. Launch Jupyter Lab:
+   ```bash
+   jupyter notebook
+   ```
+
+This will open Jupyter Lab in your default web browser. Navigate to the notebook file of interest to begin working with the datasets.
