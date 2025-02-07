@@ -12,6 +12,7 @@ Python notebook or scripts for common postprocessing of DIAD data
    ```bash
    git clone https://github.com/DIAD-beamline/DataPostprocessing
    cd DataPostprocessing
+   unset SESSION_MANAGER
    ```
 3. Launch Jupyter Lab:
    ```bash
