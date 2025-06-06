@@ -13,12 +13,13 @@ import os, sys, glob
 import pandas as pd
 import ipympl
 from matplotlib.patches import Rectangle
+import ipywidgets as widgets
 
 from scipy.optimize import curve_fit
 from matplotlib.widgets import RangeSlider
 
 class DiffractionDataExplorer:
-    def __init__(self,  diff_path = None, img_path = None, out_path = None, projection_index = 0):
+    def __init__(self,  diff_path = None, img_path = None, out_path = None, proj_idx = None):
         self.VisitPath = "/dls/k11/data"
         self.Dif_Path = diff_path
         self.Img_Path = img_path
@@ -31,7 +32,7 @@ class DiffractionDataExplorer:
         self.kbx = None    # diffraction spot position: cs-kbx
         self.kby = None    # diffraction spot position: cs-kby
         self.theta = None  # diffraction spot position: GTS theta
-        self.indx = projection_index   # imaging data: projection index
+        self.indx = proj_idx   # imaging data: projection index
         self.proj = None               # imaging data: projection data
         ##
         self.pixel_size = 0.54
@@ -116,7 +117,7 @@ class DiffractionDataExplorer:
                 self.proj=f['entry/imaging/data'][self.indx,:,:]
             else:
                 #Assumed Radiography Row Data
-                self.proj=f['entry/imaging/data'][self.indx,:,:]
+                self.proj=f['entry/imaging/data'][0,:,:]
 
     def initialize_configuration(self):
         self.x_range_img = len(self.proj[0])
@@ -300,7 +301,14 @@ class DiffractionDataExplorer:
                             transform=self.ax2.transAxes)
 
                     self.fig.canvas.draw_idle()
+    def validate_input(self, change):
+        value = change.new
+        if value is not None and value < 0:
+            change.owner.value = None  # Reset to None if negative
 
+    def update_indx(self, change):
+        self.indx = change.new  # Ensure indx updates correctly
+    
     def InputOutput(self):
         ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### File Path Selection
 
@@ -312,10 +320,26 @@ class DiffractionDataExplorer:
 
         if self.Img_Path == None:
             ifile_chooser = FileChooser(self.VisitPath)
-            ifile_chooser.title = 'Tomography Reconstruction:'
+            ifile_chooser.title = 'Tomography or Radiography Raw or Processed data:'
             ifile_chooser.register_callback(self.load_imaging)
             display(ifile_chooser)
+        
+        if self.indx == None:
+            Tomo = False
+            with h5py.File(self.Img_Path,'r') as f:
+                if 'entry/input_data/tomo/rotation_angle' in f: Tomo = True
+                elif 'entry/imaging_sum/gts_theta' in f: Tomo = True
 
+            if Tomo == False:
+                index_input = widgets.IntText(
+                    value=-1,
+                    description="Projection Index (None):",
+                    style={"description_width": "initial"},
+                    disabled=False)
+                index_input.observe(self.validate_input, names="value")
+                index_input.observe(self.update_indx, names="value")
+                display(index_input)
+            
         if self.Out_Path == None:
             ofile_chooser = FileChooser(self.VisitPath)
             ofile_chooser.title = 'Output File Path Root (without extension):'
@@ -336,7 +360,8 @@ class DiffractionDataExplorer:
 
         # Cell (0,0): Image
         self.ax1 = self.fig.add_subplot(self.gs[0, 0])
-        self.img_plot = self.ax1.imshow(self.img_array, cmap='Greys', aspect='equal')
+        self.img_plot = self.ax1.imshow(self.img_array, cmap='Greys_r', aspect='equal')
+
 
         self.ax1.set_xlim(0, self.x_range_img)
         self.ax1.set_ylim(self.y_range_img, 0)
